@@ -1,0 +1,84 @@
+{% extends 'blogs/include/base.html' %}
+{% load static %}
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="p-5">
+                <form style="display: inline-block;" method='GET' action="{% url 'addPost' user.username %}">
+                    <input class="btn btn-dark" type='submit' value="Create Post">
+                </form>
+            
+                <form style="display: inline-block; float: right;" method='GET' action="{% url 'searchCategory' %}">
+                    <select name='category' id='category'>
+                        <option value="All">All</option>
+                        <option value="Note">Note</option>
+                        <option value="Program">Program</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Food">Food</option>
+                    </select>
+                    <input type="submit" class="btn btn-dark" value="Search">
+                </form>
+        </div>
+        {% if posts %}
+            <div class="col" align="center">
+                {% for post in posts %}
+                <div class="p-3">
+                    <table border="2" class="p-5" width=70%>
+                        <tr>
+                            <td>
+                                <img src="{{post.owner.userinfo.profile.url}}" width="64" height="64" style="border-radius: 32px;">
+                                <a href="{% url 'viewProfile' post.owner %}"><strong class="px-3 pt-3">{{post.owner}}</strong></a>
+                                {% if user == post.owner %}
+                                    <a href="{% url 'deletePost' user.username post.id %}"><input type="button" class="btn btn-danger mt-3 mx-3" value="Delete" style="float: right;"></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="px-3 pt-3">{{post.title}}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="{{post.titleImage.url}}" width="100%" height="{{post.titleImage.height}}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> 
+                                {% if post in likePost %}
+                                    <button style="border:0px" id="{{post.id}}" class='heart button active'></button>
+                                    <label class="mt-2 px-3">{{post.date}}</label>
+                                {% else %}
+                                    <button style="border:0px" id="{{post.id}}" class='heart button'></button>
+                                    <label class="mt-2 px-3">{{post.date}}</label>
+                                {% endif %}
+                                <hr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-3">
+                                {{post.content|safe}}
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+            <script src="{% static 'blogs/js/heart.js' %}"></script>
+        {% else %}
+            <div class="col">
+                <p align="center">No Post...</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <nav class="navbar p-5">
+            <div class="col">
+                <li class="navbar-nav column">
+                    <ul class="navbar-nav">
+                        <li class="nav-item mx-4 pt-3"><p class="alert alert-dark">No User Information ! Please Login.</p></li>
+                    </ul>
+                </li>
+            </div>
+        </nav>
+    {% endif %}
+{% endblock %}

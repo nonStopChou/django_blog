@@ -1,0 +1,30 @@
+{% extends 'blogs/include/base.html' %}
+{% block content %}
+<div class="px-5 pt-5">
+    <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <p class="pt-3">
+            {{form.username.label}} :
+            {{form.username}}
+        </p>
+        <p class="pt-3">
+            {{form.email.label}} : 
+            {{form.email}}
+        </p>
+        <p class="pt-3">
+            {{form.password1.label}} : 
+            {{form.password1}}
+        </p>
+        <p class="pt-3">
+            {{form.password2.label}} : 
+            {{form.password2}}
+        </p>
+        <p class="pt-3">
+            <input class="btn btn-primary" type="submit" value="Register">
+        </p>
+    </form>
+    <br>
+    <br>
+</div>
+{% endblock %}

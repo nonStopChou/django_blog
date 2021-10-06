@@ -1,0 +1,33 @@
+{% extends 'blogs/include/base.html' %}
+{% block content %}
+<nav class="navbar p-5">
+    <div class="col">
+        <li class="navbar-nav column">
+            <ul class="navbar-nav">
+                <table>
+                    <tr>
+                        <th>Profile</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Age</th>
+                        <th>Degree</th>
+                    </tr>
+                    {% if users %}
+                        {% for user in users %}
+                        <tr>
+                            <td><img src="{{user.userinfo.profile.url}}" width="64px" height="64px" style="border-radius: 30px;"></td>
+                            <td><a href="{% url 'viewProfile' username=user.username %}">{{user.username}}</td>
+                            <td>{{user.email}}</td>
+                            <td>{{user.userinfo.age}}</td>
+                            <td>{{user.userinfo.degree}}</td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </ul>
+        </li>
+    </div>
+    
+</nav>
+
+{% endblock %}

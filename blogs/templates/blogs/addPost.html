@@ -1,0 +1,43 @@
+{% extends 'blogs/include/base.html' %}
+{% block content %}
+    <div class="col p-5">
+        {% if form %}
+        
+            <form action="{% url 'posts' %}" method="POST" enctype="multipart/form-data" > 
+                {% csrf_token %}
+                {{form.media}}
+                <table width=100%>
+                    <tr>
+                        <td class="p-3"><label>Username : </label></td>
+                        <td class="p-3">{{user.username}}</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><label>Title : </label></td>
+                        <td class="p-3"><input type="text" name="title"></td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><label>Title Image :</label></td>
+                        <td class="p-3"><input type="file" name="titleImage"></td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="p-3"><label>Content :</label></td>
+                        <td class="p-3">{{form.content}}</td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="p-3"><label>Category :</label></td>
+                        <td class="p-3">{{form.category}}</td>
+                    </tr>
+                    
+                    
+                    <tr>
+                        <td><input type="hidden" name='good' value="{{form.good.value}}"></td>
+                        <td class="p-3"><input type="submit" value='Post'></td>
+                    </tr>
+                </table>
+                
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}
