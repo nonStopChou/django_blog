@@ -8,6 +8,10 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from datetime import datetime
+from django.core.paginator import Paginator
+import pandas as pd
+from django.templatetags.static import static
+
 
 def HomeView(request, username=None):
     user = request.user
@@ -205,3 +209,23 @@ def AllPostsView(request):
     }
 
     return render(request, 'blogs/allPosts.html', context = context)
+
+
+def MusicView(request):
+    paginator = Paginator(Music.objects.all(), 1)
+    page = request.GET.get('page_num')
+    page_obj = paginator.get_page(page)
+    context = {
+        'page_obj' : page_obj
+    }
+    return render(request, 'blogs/music.html', context=context)
+
+
+def CovidView(request):
+
+    # url = 'blogs/static/blogs/covid/Taiwan_covid.xlsx'
+    url = static('/blogs/covid/Taiwan_covid.xlsx')
+    df = pd.read_excel(url)
+    print(df.head())
+    print(url)
+    return render(request, 'blogs/covid19.html')

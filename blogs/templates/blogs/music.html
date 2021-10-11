@@ -1,0 +1,41 @@
+{% extends 'blogs/include/base.html' %}
+{% load static %}
+{% block content %}
+<nav class="navbar p-5">
+    <div class="col">
+        <div style="text-align: center;">
+            <div style="background-color: darkslategray; border-radius: 10px;">
+                {% for obj in page_obj %}
+                <div>
+                    <img class="pt-5" src="{{ obj.cover.url }}">
+                </div>
+                <div class="p-4">
+                    
+                    <p class="text-light">{{ obj.title }}</p>
+                    <p class="text-light">{{ obj.author }}</p>
+                    <p>
+                        <audio controls>
+                            <source src="{{obj.file.url}}" type="audio/mp3">
+                        </audio>
+                    </p>
+                        {% if page_obj.has_previous %}
+                            <a href="?page_num={{ page_obj.previous_page_number }}"><i class="p-2 fa fa-step-backward fa-2x"></i></a>
+                        {% else %}
+                            <i class="p-2 fa fa-step-backward fa-2x"></i>
+                        {% endif %}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                        {% if page_obj.has_next %}
+                            <a href="?page_num={{ page_obj.next_page_number }}"><i class="fa fa-step-forward fa-2x"></i></a>
+                        {% else %}
+                            <i class="fa fa-step-forward fa-2x"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</nav>
+
+{% endblock %}

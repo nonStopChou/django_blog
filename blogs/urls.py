@@ -19,4 +19,6 @@ urlpatterns = [
     path('lobby/', UserListView, name='userList'),
     path('viewProfile/<str:username>', ViewProfileView, name='viewProfile'),
     path('allPosts/', AllPostsView, name='allPosts'),
+    path('music/', MusicView, name='music'),
+    path('covid19/', CovidView, name='covid19'),
 ]

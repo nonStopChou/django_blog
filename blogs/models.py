@@ -8,10 +8,13 @@ from ckeditor.fields import RichTextField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from PIL import Image
 
-def resize_image(imageField):
+def resize_image(imageField, width=None):
     img = Image.open(imageField)
     w, h = img.size
-    rw = 710.0 / w
+    if not width:
+        rw = 710.0 / w
+    else:
+        rw = width / w
     h = h * rw
     if h > 800:
         h = 800
@@ -71,8 +74,23 @@ class UserInfo(models.Model):
         return self.user.username
     
 
+class Music(models.Model):
 
+    title = models.TextField(null=True, blank=True)
+    author = models.TextField(null=True, blank=True)
+    file = models.FileField(null=True, blank=True, upload_to='musics')
+    cover = models.ImageField(null=True, blank=True, upload_to="musics", default="musics/default.png")
+    link = models.CharField(null=True, max_length=200)
 
+    paginator_num = 2
+
+    def save(self, *args, **kwargs):
+        super(Music, self).save(*args, **kwargs)
+        img = resize_image(self.cover, 800)
+        img.save(self.cover.path)
+
+    def __str__(self) -> str:
+        return self.title + '_' + self.author 
 
 
 
@@ -112,6 +130,48 @@ def auto_delete_file_on_change(sender, instance, **kwargs):
         return False
 
     new_file = instance.profile
+    if not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)
+
+
+@receiver(models.signals.post_delete, sender=Music)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.cover:
+        if os.path.isfile(instance.cover.path):
+            os.remove(instance.cover.path)
+
+@receiver(models.signals.pre_save, sender=Music)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return False
+    try:
+        old_file = Music.objects.get(pk=instance.pk).cover
+    except Music.DoesNotExist:
+        return False
+
+    new_file = instance.cover
+    if not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)
+
+
+@receiver(models.signals.post_delete, sender=Music)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)
+
+@receiver(models.signals.pre_save, sender=Music)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return False
+    try:
+        old_file = Music.objects.get(pk=instance.pk).file
+    except Music.DoesNotExist:
+        return False
+
+    new_file = instance.file
     if not old_file == new_file:
         if os.path.isfile(old_file.path):
             os.remove(old_file.path)
