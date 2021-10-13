@@ -226,16 +226,12 @@ def CovidView(request):
     url = os.path.join(settings.STATIC_ROOT, 'blogs/covid/Taiwan_covid.xlsx')
     df = pd.read_excel(url)
     latest = df.iloc[-1]
-    
     new_case_data = df[['date', 'new_cases']].dropna().values
     total_case_data = df[['date', 'total_cases']].dropna().values
     new_death_data = df[['date', 'new_deaths']].dropna().values
     total_death_data = df[['date', 'total_deaths']].dropna().values
     new_test_data = df[['date', 'new_tests']].dropna().values
     total_test_data = df[['date', 'total_tests']].dropna().values
-
-    # new_cases = df['new_cases'].values
-
     context = {
         'latest_date' : latest['date'],
         'new_cases' : new_case_data,
