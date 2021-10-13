@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 # from django.http import request
@@ -10,8 +11,8 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from django.core.paginator import Paginator
 import pandas as pd
-from django.templatetags.static import static
-
+from django.contrib.staticfiles.storage import staticfiles_storage
+import numpy as np
 
 def HomeView(request, username=None):
     user = request.user
@@ -222,10 +223,33 @@ def MusicView(request):
 
 
 def CovidView(request):
-
-    # url = 'blogs/static/blogs/covid/Taiwan_covid.xlsx'
-    url = static('/blogs/covid/Taiwan_covid.xlsx')
+    url = os.path.join(settings.STATIC_ROOT, 'blogs/covid/Taiwan_covid.xlsx')
     df = pd.read_excel(url)
-    print(df.head())
-    print(url)
-    return render(request, 'blogs/covid19.html')
+    latest = df.iloc[-1]
+    
+    new_case_data = df[['date', 'new_cases']].dropna().values
+    total_case_data = df[['date', 'total_cases']].dropna().values
+    new_death_data = df[['date', 'new_deaths']].dropna().values
+    total_death_data = df[['date', 'total_deaths']].dropna().values
+    new_test_data = df[['date', 'new_tests']].dropna().values
+    total_test_data = df[['date', 'total_tests']].dropna().values
+
+    # new_cases = df['new_cases'].values
+
+    context = {
+        'latest_date' : latest['date'],
+        'new_cases' : new_case_data,
+        'total_cases' : total_case_data,
+        'new_deaths' : new_death_data,
+        'total_deaths' : total_death_data,
+        'new_tests' : new_test_data,
+        'total_tests' : total_test_data,
+        'latest_cases' : int(new_case_data[-1][1]),
+        'latest_total_cases': int(total_case_data[-1][1]),
+        'latest_new_deaths': int(new_death_data[-1][1]),
+        'latest_total_deaths' : int(total_death_data[-1][1]),
+        'latest_new_tests' : int(new_test_data[-1][1]),
+        'latest_total_tests' : int(total_test_data[-1][1]),
+
+    }
+    return render(request, 'blogs/covid19.html', context=context)

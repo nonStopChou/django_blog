@@ -3,12 +3,123 @@
 {% block content %}
 <nav class="navbar p-5">
     <div class="col">
-        <div style="text-align: center;">
-                
-                
+        <div>
+            <table width="100%">
+                <tr>
+                    <th>\</th>
+                    <th>新增案例</th>
+                    <th>累計案例</th>
+                    <th>新增死亡人數</th>
+                    <th>累計死亡人數</th>
+                    <th>新增檢驗人數</th>
+                    <th>累計檢驗人數</th>
+                </tr>
+                <tr>
+                    <td>{{latest_date}}</td>
+                    <td>{{latest_cases}}</td>
+                    <td>{{latest_total_cases}}</td>
+                    <td>{{latest_new_deaths}}</td>
+                    <td>{{latest_total_deaths}}</td>
+                    <td>{{latest_new_tests}}</td>
+                    <td>{{latest_total_tests}}</td>
+                </tr>
+            </table>
+        </div>
+        <hr>
+        <div>
+            <select id='range'>
+                <option value="7">Week</option>
+                <option value="30" selected="selected">1 Month</option>
+                <option value="90">3 Month</option>
+                <option value="180">6 Month</option>
+                <option value="360">Year</option>
+                <option value="0">All</option>
+            </select>
+             
+            <select id='theme'>
+                <option value="new_cases" selected="selected">New Cases</option>
+                <option value="total_cases">Total Case</option>
+                <option value="new_deaths">New Deaths</option>
+                <option value="total_deaths">Total Deaths</option>
+                <option value="new_tests">New Tests</option>
+                <option value="total_tests">Total Tests</option>
+            </select>
+            <button id='btn_click' type="button">Update</button> 
+
+            <canvas id="new_cases_chart" width="200" height="100"></canvas>
         </div>
     </div>
-    
 </nav>
+<script>
 
+    $(document).ready(function(){
+        
+        var ctx = $("canvas#new_cases_chart")[0].getContext('2d');
+        let date_values = [{% for v,u in new_cases %}'{{v}}',{% endfor %}];
+        let new_cases_values = [{% for v,u in new_cases %}'{{u}}',{% endfor %}];
+        var new_cases_chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels : date_values.slice(-30),
+                datasets : [{
+                    label : '新增案例',
+                    data : new_cases_values.slice(-30),
+                    borderColor: 'rgb(255, 0, 0)',
+                    fill: false,
+                }],
+                
+            },
+            options: {
+                    scales:{
+                        yAxes: [{
+                            ticks:{
+                                beginAtZero:false
+                            }
+                        }]
+                    }
+                }
+        });
+        
+        $("button#btn_click").click(function(){
+            var obj = document.getElementById('range');
+            var range = parseInt(obj.value);
+            var theme = document.getElementById('theme').value;
+            var theme_obj = null;
+            switch(theme){
+                case 'new_cases':
+                    date_values = [{% for date, value in new_cases %}'{{date}}',{% endfor %}]; 
+                    theme_obj = [{% for date, value in new_cases %}'{{value}}',{% endfor %}];
+                    break;
+                case 'total_cases':
+                    date_values = [{% for date, value in total_cases %}'{{date}}',{% endfor %}]; 
+                    theme_obj = [{% for date, value in total_cases %}'{{value}}',{% endfor %}];
+                    break;
+                case 'new_deaths':
+                    date_values = [{% for date, value in new_deaths %}'{{date}}',{% endfor %}]; 
+                    theme_obj = [{% for date, value in new_deaths %}'{{value}}',{% endfor %}];
+                    break;
+                case 'total_deaths':
+                    date_values = [{% for date, value in total_deaths %}'{{date}}',{% endfor %}]; 
+                    theme_obj = [{% for date, value in total_deaths %}'{{value}}',{% endfor %}];
+                    break;
+                case 'new_tests':
+                    date_values = [{% for date, value in new_tests %}'{{date}}',{% endfor %}]; 
+                    theme_obj = [{% for date, value in new_tests %}'{{value}}',{% endfor %}];
+                    break;
+                case 'total_tests':
+                    date_values = [{% for date, value in total_tests %}'{{date}}',{% endfor %}]; 
+                    theme_obj = [{% for date, value in total_tests %}'{{value}}',{% endfor %}];
+                    break;
+            }
+            new_cases_chart.data.labels = date_values.slice(-range);
+            new_cases_chart.data.datasets = [{
+                    label : theme,
+                    data : theme_obj.slice(-range),
+                    borderColor: 'rgb(255, 0, 0)',
+                    fill: false,
+                }];
+            new_cases_chart.update();
+        });
+    })
+</script>
 {% endblock %}
